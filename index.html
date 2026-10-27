@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>交通路牌扩展工具</title>
+<!-- 引入外部 CSS -->
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">路牌交通扩展</div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <!-- 字体上传 -->
+    <div class="panel-section">
+      <div class="panel-title">字体文件</div>
+      <div class="upload-zone" onclick="document.getElementById('fontFile').click()">
+        <input type="file" id="fontFile" accept=".ttf,.otf">
+        <div class="upload-text">点击上传有效交通字体(建议交通专用字体)</div>
+      </div>
+      <div id="fontStatus" class="font-status warn">未上传，使用系统默认</div>
+    </div>
+
+    <!-- 外观配色 -->
+    <div class="panel-section">
+      <div class="panel-title">路牌配色 (仅隧道/桥梁生效)</div>
+      <div class="form-group">
+        <select id="colorTheme" class="form-control">
+          <option value="green">绿牌</option>
+          <option value="blue">蓝牌</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 中文字段设置 -->
+    <div class="panel-section" id="commonTextOptions">
+      <div class="panel-title">文字与翻译设置 (手填)</div>
+      
+      <div class="form-group">
+        <label>第一行 (中文主标题)</label>
+        <input type="text" id="inputTitle" class="form-control" value="大梅关隧道" maxlength="20">
+      </div>
+      <div class="form-group">
+        <input type="text" id="inputForeignTitle" class="form-control foreign-input" value="Dameiguan Tunnel" placeholder="第一行外语 (手填)">
+      </div>
+
+      <div class="form-group" style="margin-top: 10px;">
+        <label>距离数值 (数字)</label>
+        <input type="text" id="inputDistance" class="form-control" value="4585" maxlength="6">
+      </div>
+      
+      <div class="form-group" style="margin-top: 10px;">
+        <label>长度标签</label>
+        <input type="text" id="inputLengthLabel" class="form-control" value="长度" maxlength="12">
+      </div>
+      <div class="form-group">
+        <input type="text" id="inputForeignLength" class="form-control foreign-input" value="Length" placeholder="长度外语 (手填)">
+      </div>
+
+      <div class="form-group" style="margin-top: 10px;">
+        <label>警告/提示语</label>
+        <input type="text" id="inputWarning" class="form-control" value="请开灯行驶" maxlength="20">
+      </div>
+      <div class="form-group">
+        <input type="text" id="inputForeignWarning" class="form-control foreign-input" value="Turn on headlights" placeholder="警告外语 (手填)">
+      </div>
+    </div>
+
+    <!-- 里程标专属设置 -->
+    <div class="panel-section" id="kmOptions" style="display: none;">
+      <div class="panel-title">里程标专属设置</div>
+      <div class="form-group">
+        <label>公里数 (如 261)</label>
+        <input type="text" id="inputKmValue" class="form-control" value="261" maxlength="4">
+      </div>
+      <div class="form-group">
+        <label>路线编号 (如 G6011)</label>
+        <input type="text" id="inputRoute" class="form-control" value="G6011" maxlength="300">
+      </div>
+    </div>
+
+    <!-- 百米牌专属设置 -->
+    <div class="panel-section" id="hmOptions" style="display: none;">
+      <div class="panel-title">百米牌专属设置</div>
+      <div class="form-group">
+        <label>百米数 (1-9)</label>
+        <input type="text" id="inputHundred" class="form-control" value="7" maxlength="1">
+      </div>
+      <div class="form-group">
+        <label>里程数 (如 400)</label>
+        <input type="text" id="inputHmValue" class="form-control" value="400" maxlength="4">
+      </div>
+    </div>
+
+    <!-- 限速牌专属设置 -->
+    <div class="panel-section" id="speedOptions" style="display: none;">
+      <div class="panel-title">限速牌设置</div>
+      <div class="form-group">
+        <label>限速类型</label>
+        <select id="speedType" class="form-control">
+          <option value="max">最高限速 (红圈黑字)</option>
+          <option value="min">最低限速 (蓝底白边)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>限速值 (如 120)</label>
+        <input type="text" id="inputSpeedValue" class="form-control" value="120" maxlength="3">
+      </div>
+    </div>
+
+    <!-- 排版参数 -->
+    <div class="panel-section">
+      <div class="panel-title">排版与外观</div>
+      
+      <div class="row-2">
+        <div class="form-group">
+          <label>高: <span id="hVal">550</span>px</label>
+          <input type="range" id="inputHeight" min="200" max="1000" step="10" value="550">
+        </div>
+        <div class="form-group">
+          <label>画布留白比: <span id="ratioVal">1.0</span></label>
+          <input type="range" id="inputRatio" min="0.8" max="1.5" step="0.1" value="1.0">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>字体粗细: <span id="weightVal">700</span></label>
+        <input type="range" id="inputWeight" min="100" max="900" step="100" value="700">
+      </div>
+
+      <div class="form-group">
+        <label>文字横向拉伸 (X): <span id="scaleXVal">1.0</span></label>
+        <input type="range" id="inputScaleX" min="0.5" max="2.0" step="0.1" value="1.0">
+      </div>
+      
+      <div class="form-group">
+        <label>文字纵向拉伸 (Y): <span id="scaleYVal">1.0</span></label>
+        <input type="range" id="inputScaleY" min="0.5" max="2.0" step="0.1" value="1.0">
+      </div>
+
+      <div class="form-group">
+        <label>圆角大小 (仅方形生效): <span id="radiusVal">15</span>px</label>
+        <input type="range" id="inputRadius" min="0" max="60" step="1" value="15">
+      </div>
+
+      <div class="form-group">
+        <label>背景不透明度: <span id="opacityVal">100</span>%</label>
+        <input type="range" id="inputOpacity" min="10" max="100" step="5" value="100">
+      </div>
+    </div>
+  </aside>
+
+  <main class="workspace">
+    <div class="templates" id="templateContainer">
+      <div class="template-card active" data-type="tunnel">
+        <span>隧道提示牌<br>(三层)</span>
+      </div>
+      <div class="template-card" data-type="blue_sign">
+        <span>指示蓝牌<br>(极简)</span>
+      </div>
+      <div class="template-card" data-type="bridge">
+        <span>桥梁路名牌<br>(中英两行)</span>
+      </div>
+      <div class="template-card" data-type="speed_limit">
+        <span>限速牌<br>(最高/最低)</span>
+      </div>
+      <div class="template-card" data-type="km_marker">
+        <span>高速里程标<br>(切角平底)</span>
+      </div>
+      <div class="template-card" data-type="hm_marker">
+        <span>高速百米牌<br>(圆形)</span>
+      </div>
+    </div>
+
+    <div class="preview-area">
+      <canvas id="signCanvas"></canvas>
+    </div>
+
+    <div class="bottom-bar">
+      <button class="btn btn-secondary" id="btnReset">恢复默认值</button>
+      <button class="btn btn-primary" id="btnExport">导出高清 PNG</button>
+    </div>
+  </main>
+</div>
+
+<!-- 声明弹窗 -->
+<div class="modal-overlay" id="alertModal">
+  <div class="modal">
+    <div class="modal-title">关于本工具</div>
+    <div class="modal-desc">
+      本工具纯便利化，无次数限制，无需账号登录，由哔哩哔哩一杯精华jinghua使用deepseek所创建的工具，由于ai生成的代码，bug可能比较多(本人也不会写编程TAT)。<br><br>
+      但是大家可以修改，但是<b>不能盈利、商业化，做恶搞低俗内容！</b>
+    </div>
+    <div class="modal-footer" style="justify-content: flex-end;">
+      <div class="modal-actions">
+        <button class="modal-btn confirm" id="btnCloseAlert">我知道了</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 恢复默认值 确认弹窗 -->
+<div class="modal-overlay" id="resetModal">
+  <div class="modal">
+    <div class="modal-title">确认恢复默认值？</div>
+    <div class="modal-desc">当前上传的自定义字体、文字修改和排版设置都将丢失，恢复为初始状态。</div>
+    <div class="modal-footer">
+      <label class="checkbox-group">
+        <input type="checkbox" id="chkNoPrompt"> 不再提示
+      </label>
+      <div class="modal-actions">
+        <button class="modal-btn cancel" id="btnCancelReset">取消</button>
+        <button class="modal-btn confirm" id="btnConfirmReset">确认恢复</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 引入外部 JS -->
+<script src="script.js"></script>
+</body>
+</html>
